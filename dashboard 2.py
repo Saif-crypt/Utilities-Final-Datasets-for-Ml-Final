@@ -119,11 +119,6 @@ if selected == "🏠 Overview":
     with kpi4:
         st.markdown(f'<div class="metric-card">📈<br>Avg COP<br><h2>{avg_cop:.2f}</h2></div>', unsafe_allow_html=True)
     # Additional KPIs in simpler metric format (Code2 style)
-    st.subheader("📌 Key Performance Indicators (KPIs)")
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Latest COP", round(latest_cop, 2))
-    col2.metric("Latest Predicted COP", round(latest_pred, 2))
-    col3.metric("Total Anomalies Detected", anomalies_count)
 
 elif selected == "📉 COP Trends (Plotly)":
     fig = go.Figure()
