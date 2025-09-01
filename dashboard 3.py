@@ -34,7 +34,7 @@ st.markdown("""
 # ===============================
 # Load Data
 # ===============================
-df = pd.read_csv("utilities_3compressors_final.csv")
+df = pd.read_csv("utilities_final.csv")
 df["Timestamp"] = pd.to_datetime(df["Timestamp"])
 
 # Sidebar
