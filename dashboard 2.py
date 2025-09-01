@@ -137,6 +137,15 @@ elif selected == "📉 COP Trends (Matplotlib)":
     ax1.set_title("COP vs Anomalies")
     st.pyplot(fig1)
 
+elif selected == "📈 Actual vs Predicted COP (Matplotlib)":
+    st.subheader("📈 Actual vs Predicted COP")
+    fig2, ax2 = plt.subplots(figsize=(12, 6))
+    ax2.plot(df.index, df["COP"], label="Actual COP", color="blue")
+    ax2.plot(df.index, df["COP_Pred"], label="Predicted COP", color="orange")
+    ax2.legend()
+    ax2.set_title("Actual vs Predicted COP")
+    st.pyplot(fig2)
+
 if selected == "⚠️ Anomalies":
     anomaly_daily = df[df["Anomaly"] == -1].groupby(pd.Grouper(freq='D')).size()
     fig = px.bar(x=anomaly_daily.index, y=anomaly_daily.values,
