@@ -142,8 +142,8 @@ elif selected == "📉 COP Trends (Matplotlib)":
     ax1.set_title("COP vs Anomalies")
     st.pyplot(fig1)
 
-elif selected == "⚠️ Anomalies":
-    anomaly_daily = df[df["Anomaly"] == -1].groupby(df.index.date).size()
+if selected == "⚠️ Anomalies":
+    anomaly_daily = df[df["Anomaly"] == -1].groupby(pd.Grouper(freq='D')).size()
     fig = px.bar(x=anomaly_daily.index, y=anomaly_daily.values,
                  labels={"x": "Date", "y": "Anomalies"},
                  color=anomaly_daily.values,
