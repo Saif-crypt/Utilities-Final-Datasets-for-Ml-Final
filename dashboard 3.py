@@ -8,28 +8,66 @@ import plotly.graph_objects as go
 # ===============================
 st.set_page_config(page_title="Utilities Dashboard", layout="wide")
 
-# Custom CSS for Styling
+import streamlit as st
+
+# ---------------------- CUSTOM SIDEBAR STYLING ----------------------
 st.markdown("""
     <style>
-        /* Background & Fonts */
-        body {
-            background-color: #0e1117;
-            color: #fafafa;
-        }
-        .big-font {
-            font-size:30px !important;
-            font-weight: bold;
-            color: #f9c74f;
-        }
-        .metric-card {
+        /* Sidebar Background */
+        [data-testid="stSidebar"] {
             background-color: #1f2630;
-            padding: 20px;
-            border-radius: 15px;
+            padding: 20px 10px;
+        }
+
+        /* Sidebar Title */
+        [data-testid="stSidebar"] h1, 
+        [data-testid="stSidebar"] h2, 
+        [data-testid="stSidebar"] h3 {
+            color: #f9c74f !important;
+            font-weight: bold;
             text-align: center;
-            box-shadow: 0px 4px 8px rgba(0,0,0,0.4);
+        }
+
+        /* Navigation Radio Buttons */
+        .stRadio > label {
+            font-size: 18px;
+            font-weight: 500;
+            color: #ffffff !important;
+            padding: 8px 15px;
+            border-radius: 8px;
+            display: block;
+            margin-bottom: 8px;
+            background-color: #2a2f3a;
+            transition: all 0.3s ease;
+        }
+
+        /* Hover Effect */
+        .stRadio > label:hover {
+            background-color: #f9c74f !important;
+            color: #1f2630 !important;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Selected Option (removes default dot) */
+        div[role="radiogroup"] > label[data-baseweb="radio"] > div:first-child {
+            display: none;
         }
     </style>
 """, unsafe_allow_html=True)
+
+# ---------------------- SIDEBAR CONTENT ----------------------
+st.sidebar.markdown("## ⚡ Utilities Dashboard")
+st.sidebar.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=120)  # optional logo
+
+page = st.sidebar.radio(
+    "Navigation",
+    ["🏠 Overview", "📉 COP Trends", "⚠️ Anomalies", "📊 Correlation"]
+)
+
+st.title("Utilities Monitoring Dashboard")
+st.write(f"You selected **{page}** page 🚀")
+
 
 # ===============================
 # Load Data
