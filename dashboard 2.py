@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 # ===============================
 st.set_page_config(page_title="Utilities Dashboard", layout="wide")
 
-df = pd.read_csv("utilities_3compressors_final.csv")
+df = pd.read_csv("utilities_final.csv")
 df["Timestamp"] = pd.to_datetime(df["Timestamp"])
 
 # Sidebar
