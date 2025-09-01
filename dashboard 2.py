@@ -1,68 +1,211 @@
+pip install streamlit-option-menu
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # ===============================
-# Load Data
+# Page Config & CSS Styling
 # ===============================
 st.set_page_config(page_title="Utilities Dashboard", layout="wide")
 
-df = pd.read_csv("utilities_final.csv")
-df["Timestamp"] = pd.to_datetime(df["Timestamp"])
+st.markdown("""
+    from streamlit_option_menu import option_menu
+import streamlit as st
 
-# Sidebar
-st.sidebar.title("⚡ Navigation")
-page = st.sidebar.radio("Go to", ["Overview", "COP Trends", "Anomalies", "Correlation"])
+# ------ Custom Sidebar Styling ------
+st.markdown("""
+    <style>
+    [data-testid="stSidebar"] {
+        background: linear-gradient(135deg, #2e3959 0%, #304e7c 100%);
+        color: #f9c74f;
+        padding: 30px 10px 20px 10px;
+        border-radius: 20px 0 0 20px;
+        min-height: 100vh;
+    }
+    /* Sidebar menu items */
+    .nav-link {
+        font-size: 20px !important;
+        color: #F9FAFB !important;
+        margin: 6px 0;
+        border-radius: 8px !important;
+    }
+    .nav-link.active {
+        background-color: #f9c74f !important;
+        color: #2e3959 !important;
+    }
+    .nav-link:hover {
+        background-color: #f9c74f !important;
+        color: #2e3959 !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+with st.sidebar:
+    selected = option_menu(
+        "Main Menu",                         # Title
+        ["Dashboard", "COP Trends", "Anomalies", "Settings"],   # Menu options
+        icons=['grid-1x2-fill', 'bar-chart-line-fill', 'exclamation-triangle-fill', 'gear-fill'],
+        menu_icon="cast", default_index=0,
+        styles={
+            "container": {"background-color": "#2e3959"},
+            "icon": {"color": "#f9c74f", "font-size": "25px"},
+            "nav-link": {"font-size": "20px", "text-align": "left", "margin":"5px", "--hover-color": "#f9c74f"},
+            "nav-link-selected": {"background-color": "#f9c74f", "color": "#2e3959"},
+        }
+    )
+    st.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=100)
+
+# Use variable selected for page routing:
+if selected == "Dashboard":
+    st.title("Dashboard Content")
+elif selected == "COP Trends":
+    st.title("COP Trends Content")
+elif selected == "Anomalies":
+    st.title("Anomalies Content")
+elif selected == "Settings":
+    st.title("Settings Content")
+
+        /* Sidebar Links */
+        section[data-testid="stSidebar"] a {
+            font-size: 18px;
+            font-weight: 500;
+            color: #ffffff !important;
+            padding: 8px 15px;
+            border-radius: 8px;
+            display: block;
+            margin-bottom: 8px;
+            background-color: #2a2f3a;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        section[data-testid="stSidebar"] a:hover {
+            background-color: #f9c74f !important;
+            color: #1f2630 !important;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        /* Main header */
+        .big-font {
+            font-size: 32px !important;
+            color: #f9c74f;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        /* Metric cards */
+        .metric-card {
+            background-color: #2a2f3a;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .metric-card h2 {
+            margin: 10px 0 0 0;
+            color: #f9c74f;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # ===============================
-# KPI Cards
+# Load and cache data
 # ===============================
-if page == "Overview":
-    st.title("⚡ Utilities Monitoring Dashboard")
-    st.markdown("Real-time COP monitoring, anomalies, and KPIs")
+@st.cache_data
+def load_data():
+    df = pd.read_csv("utilities_final.csv")
+    df["Timestamp"] = pd.to_datetime(df["Timestamp"])
+    df = df.set_index("Timestamp")
+    return df
 
+df = load_data()
+
+# ===============================
+# Sidebar with Navigation
+# ===============================
+st.sidebar.markdown("## ⚡ Utilities Dashboard")
+st.sidebar.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=120)
+page = st.sidebar.radio(
+    "Navigation",
+    ["🏠 Overview", "📉 COP Trends (Plotly)", "📉 COP Trends (Matplotlib)", "⚠️ Anomalies", "📊 Correlation (Plotly)", "📊 Correlation (Seaborn)", "📈 Interactive COP Trend"]
+)
+
+# ===============================
+# Main Title and Page Indicator
+# ===============================
+st.markdown('<h1 class="big-font">Utilities Monitoring Dashboard</h1>', unsafe_allow_html=True)
+st.write(f"You selected **{page}** page 🚀")
+
+# ===============================
+# Pages Implementation
+# ===============================
+if page == "🏠 Overview":
     latest_cop = df["COP"].iloc[-1]
     latest_pred = df["COP_Pred"].iloc[-1]
     anomalies_count = (df["Anomaly"] == -1).sum()
     avg_cop = df["COP"].mean()
-
-    # KPI Cards (3 columns)
+    # KPI cards with CSS styling (from Code1)
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    kpi1.metric("📌 Latest COP", f"{latest_cop:.2f}")
-    kpi2.metric("📊 Predicted COP", f"{latest_pred:.2f}")
-    kpi3.metric("⚠️ Total Anomalies", anomalies_count)
-    kpi4.metric("📈 Avg COP", f"{avg_cop:.2f}")
+    with kpi1:
+        st.markdown(f'<div class="metric-card">📌<br>Latest COP<br><h2>{latest_cop:.2f}</h2></div>', unsafe_allow_html=True)
+    with kpi2:
+        st.markdown(f'<div class="metric-card">📊<br>Predicted COP<br><h2>{latest_pred:.2f}</h2></div>', unsafe_allow_html=True)
+    with kpi3:
+        st.markdown(f'<div class="metric-card">⚠️<br>Total Anomalies<br><h2>{anomalies_count}</h2></div>', unsafe_allow_html=True)
+    with kpi4:
+        st.markdown(f'<div class="metric-card">📈<br>Avg COP<br><h2>{avg_cop:.2f}</h2></div>', unsafe_allow_html=True)
+    # Additional KPIs in simpler metric format (Code2 style)
+    st.subheader("📌 Key Performance Indicators (KPIs)")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Latest COP", round(latest_cop, 2))
+    col2.metric("Latest Predicted COP", round(latest_pred, 2))
+    col3.metric("Total Anomalies Detected", anomalies_count)
 
-# ===============================
-# COP Trends
-# ===============================
-if page == "COP Trends":
-    st.header("📉 COP Trends with Anomaly Detection")
-
+elif page == "📉 COP Trends (Plotly)":
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df["Timestamp"], y=df["COP"], 
-                             mode="lines", name="COP", line=dict(color="blue")))
-    fig.add_trace(go.Scatter(x=df[df["Anomaly"]==-1]["Timestamp"], 
-                             y=df[df["Anomaly"]==-1]["COP"], 
-                             mode="markers", name="Anomaly", marker=dict(color="red", size=10, symbol="x")))
+    fig.add_trace(go.Scatter(x=df.index, y=df["COP"], mode="lines", name="COP", line=dict(color="#4cc9f0", width=3)))
+    fig.add_trace(go.Scatter(x=df[df["Anomaly"] == -1].index, y=df[df["Anomaly"] == -1]["COP"], mode="markers", name="Anomaly",
+                             marker=dict(color="red", size=12, symbol="x")))
+    fig.update_layout(template="plotly_dark", title="COP vs Anomalies", margin=dict(l=20, r=20, t=40, b=20))
     st.plotly_chart(fig, use_container_width=True)
 
-# ===============================
-# Anomaly Summary
-# ===============================
-if page == "Anomalies":
-    st.header("⚠️ Anomaly Summary")
-    anomaly_daily = df[df["Anomaly"]==-1].groupby(df["Timestamp"].dt.date).size()
+elif page == "📉 COP Trends (Matplotlib)":
+    st.subheader("🔎 COP with Anomaly Detection (Matplotlib)")
+    fig1, ax1 = plt.subplots(figsize=(12, 6))
+    ax1.plot(df.index, df["COP"], label="COP", color="blue")
+    ax1.scatter(df.index[df["Anomaly"] == -1], df["COP"][df["Anomaly"] == -1], color="red", label="Anomaly", marker="x")
+    ax1.legend()
+    ax1.set_title("COP vs Anomalies")
+    st.pyplot(fig1)
 
-    fig = px.bar(x=anomaly_daily.index, y=anomaly_daily.values, labels={"x":"Date", "y":"Anomalies"})
+elif page == "⚠️ Anomalies":
+    anomaly_daily = df[df["Anomaly"] == -1].groupby(df.index.date).size()
+    fig = px.bar(x=anomaly_daily.index, y=anomaly_daily.values,
+                 labels={"x": "Date", "y": "Anomalies"},
+                 color=anomaly_daily.values,
+                 color_continuous_scale="oranges")
+    fig.update_layout(template="plotly_dark", margin=dict(l=20, r=20, t=40, b=20))
     st.plotly_chart(fig, use_container_width=True)
 
-# ===============================
-# Correlation
-# ===============================
-if page == "Correlation":
-    st.header("📊 Correlation Heatmap")
+elif page == "📊 Correlation (Plotly)":
     corr = df.corr()
     fig = px.imshow(corr, text_auto=True, aspect="auto", color_continuous_scale="RdBu_r")
+    fig.update_layout(template="plotly_dark", margin=dict(l=20, r=20, t=40, b=20))
     st.plotly_chart(fig, use_container_width=True)
+
+elif page == "📊 Correlation (Seaborn)":
+    st.subheader("📊 Correlation Heatmap (Seaborn)")
+    fig3, ax3 = plt.subplots(figsize=(10, 6))
+    sns.heatmap(df.corr(), cmap="coolwarm", annot=False, ax=ax3)
+    st.pyplot(fig3)
+
+elif page == "📈 Interactive COP Trend":
+    st.subheader("📊 Interactive COP Trend (Plotly)")
+    fig4 = px.line(df.reset_index(), x="Timestamp", y=["COP", "COP_Pred"],
+                   labels={"value": "COP", "Timestamp": "Time"},
+                   title="Interactive COP vs Predicted COP")
+    st.plotly_chart(fig4, use_container_width=True)
