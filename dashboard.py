@@ -11,7 +11,7 @@ st.set_page_config(page_title="Utilities Dashboard", layout="wide")
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("utilities_3compressors_final.csv")
+    df = pd.read_csv("utilities_final.csv")
     df["Timestamp"] = pd.to_datetime(df["Timestamp"])
     df = df.set_index("Timestamp")
     return df
