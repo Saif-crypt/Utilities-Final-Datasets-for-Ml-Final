@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 # ===============================
 st.set_page_config(page_title="Utilities Dashboard", layout="wide")
 
-import streamlit as st
+# ---------------------- CUSTOM SIDEBAR STYLING ----------------------
 
 # ---------------------- CUSTOM SIDEBAR STYLING ----------------------
 st.markdown("""
@@ -28,8 +28,8 @@ st.markdown("""
             text-align: center;
         }
 
-        /* Navigation Radio Buttons */
-        .stRadio > label {
+        /* Links (Streamlit multipage) */
+        section[data-testid="stSidebar"] a {
             font-size: 18px;
             font-weight: 500;
             color: #ffffff !important;
@@ -39,22 +39,23 @@ st.markdown("""
             margin-bottom: 8px;
             background-color: #2a2f3a;
             transition: all 0.3s ease;
+            text-decoration: none;
         }
 
         /* Hover Effect */
-        .stRadio > label:hover {
+        section[data-testid="stSidebar"] a:hover {
             background-color: #f9c74f !important;
             color: #1f2630 !important;
             font-weight: bold;
             cursor: pointer;
         }
-
-        /* Selected Option (removes default dot) */
-        div[role="radiogroup"] > label[data-baseweb="radio"] > div:first-child {
-            display: none;
-        }
     </style>
 """, unsafe_allow_html=True)
+
+# ---------------------- OPTIONAL LOGO + TITLE ----------------------
+st.sidebar.markdown("## ⚡ Utilities Dashboard")
+st.sidebar.image("https://streamlit.io/images/brand/streamlit-mark-color.png", width=120)
+
 
 # ---------------------- SIDEBAR CONTENT ----------------------
 st.sidebar.markdown("## ⚡ Utilities Dashboard")
